@@ -21,9 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -65,8 +65,8 @@ class OrderControllerTests extends BaseControllerTest {
         when(orderService.createOrder(order)).thenReturn(orderDTO);
 
         mockMvc.perform(post("/order")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(order)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(order)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"))
                 .andExpect(jsonPath("$.customer.name").value("John Doe"))
@@ -75,12 +75,11 @@ class OrderControllerTests extends BaseControllerTest {
 
     @Test
     void testGetOrder() throws Exception {
-        when(orderService.getAllOrders(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(orderDTO())));
+        when(orderService.getAllOrders(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(orderDTO())));
 
         mockMvc.perform(get("/order"))
                 .andExpect(status().isOk())
-            .andExpect(jsonPath("$.content[0].description").value("Test Order"))
+                .andExpect(jsonPath("$.content[0].description").value("Test Order"))
                 .andExpect(jsonPath("$..customer.name").value("John Doe"))
                 .andExpect(jsonPath("$.content[0].products[0].id").value(2));
     }
@@ -103,8 +102,7 @@ class OrderControllerTests extends BaseControllerTest {
         when(orderService.getOrderById(1L))
                 .thenThrow(new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
 
-        mockMvc.perform(get("/order/1"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/order/1")).andExpect(status().isNotFound());
     }
 
     private OrderDTO orderDTO() {

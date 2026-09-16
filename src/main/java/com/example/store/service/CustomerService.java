@@ -1,5 +1,12 @@
 package com.example.store.service;
 
+import com.example.store.dto.CustomerDTO;
+import com.example.store.entity.Customer;
+import com.example.store.mapper.CustomerMapper;
+import com.example.store.repository.CustomerRepository;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -7,13 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import com.example.store.dto.CustomerDTO;
-import com.example.store.entity.Customer;
-import com.example.store.mapper.CustomerMapper;
-import com.example.store.repository.CustomerRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Validated
@@ -25,14 +25,13 @@ public class CustomerService {
 
     @Cacheable(value = cacheName, key = "'all-' + #pageable")
     public Page<CustomerDTO> getAllCustomers(@NonNull Pageable pageable) {
-        return customerRepository.findAll(pageable)
-                .map(customerMapper::customerToCustomerDTO);
+        return customerRepository.findAll(pageable).map(customerMapper::customerToCustomerDTO);
     }
 
     @Cacheable(value = cacheName, key = "#namePart + '-' + #pageable")
-    public Page<CustomerDTO> getCustomersByNamePart(
-            @NonNull String namePart, @NonNull Pageable pageable) {
-        return customerRepository.findCustomersByNamePart(namePart, pageable)
+    public Page<CustomerDTO> getCustomersByNamePart(@NonNull String namePart, @NonNull Pageable pageable) {
+        return customerRepository
+                .findCustomersByNamePart(namePart, pageable)
                 .map(customerMapper::customerToCustomerDTO);
     }
 

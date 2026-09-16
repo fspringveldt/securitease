@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,8 +55,8 @@ class CustomerControllerTests extends BaseControllerTest {
         when(customerService.createCustomer(customer)).thenReturn(customerDTO);
 
         mockMvc.perform(post("/customer")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(customer)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("John Doe"));
     }
@@ -66,8 +66,7 @@ class CustomerControllerTests extends BaseControllerTest {
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setId(1L);
         customerDTO.setName("John Doe");
-        when(customerService.getAllCustomers(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(customerDTO)));
+        when(customerService.getAllCustomers(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(customerDTO)));
 
         mockMvc.perform(get("/customer"))
                 .andExpect(status().isOk())

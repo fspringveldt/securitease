@@ -1,12 +1,10 @@
 package com.example.store.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
+import com.example.store.dto.OrderDTO;
+import com.example.store.dto.OrderProductDTO;
+import com.example.store.entity.Order;
+import com.example.store.mapper.OrderMapper;
+import com.example.store.repository.OrderRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.store.dto.OrderDTO;
-import com.example.store.dto.OrderProductDTO;
-import com.example.store.entity.Order;
-import com.example.store.mapper.OrderMapper;
-import com.example.store.repository.OrderRepository;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTests {
@@ -78,8 +78,8 @@ class OrderServiceTests {
     void getOrderByIdThrowsNotFoundWhenOrderDoesNotExist() {
         when(orderRepository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class, () -> orderService.getOrderById(1L));
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> orderService.getOrderById(1L));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         verify(orderRepository).findById(1L);

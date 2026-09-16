@@ -1,6 +1,11 @@
 package com.example.store.service;
 
-import java.util.List;
+import com.example.store.dto.OrderDTO;
+import com.example.store.entity.Order;
+import com.example.store.mapper.OrderMapper;
+import com.example.store.repository.OrderRepository;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -9,15 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.example.store.dto.OrderDTO;
-import com.example.store.entity.Order;
-import com.example.store.mapper.OrderMapper;
-import com.example.store.repository.OrderRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +27,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     @Cacheable(value = cacheName, key = "'all-' + #pageable")
+    @Transactional(readOnly = true)
     public Page<OrderDTO> getAllOrders(@NonNull Pageable pageable) {
         return orderRepository.findAll(pageable).map(orderMapper::orderToOrderDTO);
     }
@@ -37,8 +37,7 @@ public class OrderService {
         // Ideally this should be handled by a service layer.
         // Left it like this for simplicity.
         return orderMapper.orderToOrderDTO(
-                orderRepository.findById(id)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+                orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     @CacheEvict(value = cacheName, allEntries = true)

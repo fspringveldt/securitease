@@ -6,11 +6,10 @@ on:
     branches:
       - main
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   test:
@@ -20,8 +19,8 @@ jobs:
       postgres:
         image: postgres:16.2
         env:
-          POSTGRES_USER: ${{ secrets.STORE_DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.STORE_DB_PASSWORD }}
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
           POSTGRES_DB: store
         ports:
           - 5433:5432
@@ -38,23 +37,26 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
           cache: gradle
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew test spotlessCheck
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/store
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.STORE_DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.STORE_DB_PASSWORD }}
+          SPRING_DATASOURCE_USERNAME: ci
+          SPRING_DATASOURCE_PASSWORD: ci
 
   image:
     name: Build and publish image
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4

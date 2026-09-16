@@ -27,8 +27,7 @@ public class CustomerController {
 
     @GetMapping(params = "name")
     public Page<CustomerDTO> getCustomersByNamePart(
-            @RequestParam("name") @NonNull String namePart,
-            @PageableDefault(size = 20) @NonNull Pageable pageable) {
+            @RequestParam("name") @NonNull String namePart, @PageableDefault(size = 20) @NonNull Pageable pageable) {
         return customerService.getCustomersByNamePart(namePart, pageable);
     }
 

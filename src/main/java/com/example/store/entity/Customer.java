@@ -9,10 +9,11 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(indexes = {
-        // Index name so DB is performant on the name part lookup.
-        @Index(name = "idx_first_name", columnList = "name")
-})
+@Table(
+        indexes = {
+            // Index name so DB is performant on the name part lookup.
+            @Index(name = "idx_first_name", columnList = "name")
+        })
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

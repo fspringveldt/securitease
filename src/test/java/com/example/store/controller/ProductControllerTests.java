@@ -1,13 +1,10 @@
 package com.example.store.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
+import com.example.store.dto.ProductDTO;
+import com.example.store.entity.Product;
+import com.example.store.mapper.ProductMapper;
+import com.example.store.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,11 +17,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Product;
-import com.example.store.mapper.ProductMapper;
-import com.example.store.service.ProductService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProductController.class)
 @ComponentScan(basePackageClasses = ProductMapper.class)
@@ -50,8 +50,7 @@ class ProductControllerTests extends BaseControllerTest {
 
     @Test
     void testGetAllProducts() throws Exception {
-        when(productService.getAllProducts(any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(productDTO())));
+        when(productService.getAllProducts(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(productDTO())));
 
         mockMvc.perform(get("/product"))
                 .andExpect(status().isOk())
