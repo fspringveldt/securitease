@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.store.dto.OrderDTO;
+import com.example.store.dto.OrderProductDTO;
 import com.example.store.entity.Order;
 import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderRepository;
@@ -108,6 +109,10 @@ class OrderServiceTests {
     private OrderDTO orderDTO(String description) {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setDescription(description);
+        OrderProductDTO productDTO = new OrderProductDTO();
+        productDTO.setId(2L);
+        productDTO.setDescription("Test Product");
+        orderDTO.setProducts(List.of(productDTO));
         return orderDTO;
     }
 }

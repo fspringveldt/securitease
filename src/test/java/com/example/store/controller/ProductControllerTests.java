@@ -55,7 +55,8 @@ class ProductControllerTests extends BaseControllerTest {
 
         mockMvc.perform(get("/product"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].description").value("Test Product"));
+                .andExpect(jsonPath("$.content[0].description").value("Test Product"))
+                .andExpect(jsonPath("$.content[0].orderIds[0]").value(1));
     }
 
     @Test
@@ -64,7 +65,8 @@ class ProductControllerTests extends BaseControllerTest {
 
         mockMvc.perform(get("/product/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.description").value("Test Product"));
+                .andExpect(jsonPath("$.description").value("Test Product"))
+                .andExpect(jsonPath("$.orderIds[0]").value(1));
     }
 
     @Test
@@ -82,6 +84,7 @@ class ProductControllerTests extends BaseControllerTest {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setId(1L);
         productDTO.setDescription("Test Product");
+        productDTO.setOrderIds(List.of(1L));
         return productDTO;
     }
 }

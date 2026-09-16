@@ -108,6 +108,7 @@ class ProductServiceTests {
     private ProductDTO productDTO(String description) {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setDescription(description);
+        productDTO.setOrderIds(List.of(1L));
         return productDTO;
     }
 }

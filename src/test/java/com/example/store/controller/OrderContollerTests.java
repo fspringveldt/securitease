@@ -2,6 +2,7 @@ package com.example.store.controller;
 
 import com.example.store.dto.OrderCustomerDTO;
 import com.example.store.dto.OrderDTO;
+import com.example.store.dto.OrderProductDTO;
 import com.example.store.entity.Customer;
 import com.example.store.entity.Order;
 import com.example.store.mapper.CustomerMapper;
@@ -68,7 +69,8 @@ class OrderControllerTests extends BaseControllerTest {
                 .content(objectMapper.writeValueAsString(order)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"))
-                .andExpect(jsonPath("$.customer.name").value("John Doe"));
+                .andExpect(jsonPath("$.customer.name").value("John Doe"))
+                .andExpect(jsonPath("$.products[0].description").value("Test Product"));
     }
 
     @Test
@@ -78,8 +80,9 @@ class OrderControllerTests extends BaseControllerTest {
 
         mockMvc.perform(get("/order"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..description").value("Test Order"))
-                .andExpect(jsonPath("$..customer.name").value("John Doe"));
+            .andExpect(jsonPath("$.content[0].description").value("Test Order"))
+                .andExpect(jsonPath("$..customer.name").value("John Doe"))
+                .andExpect(jsonPath("$.content[0].products[0].id").value(2));
     }
 
     // Add a test for for single order
@@ -90,7 +93,8 @@ class OrderControllerTests extends BaseControllerTest {
         mockMvc.perform(get("/order/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description").value("Test Order"))
-                .andExpect(jsonPath("$.customer.name").value("John Doe"));
+                .andExpect(jsonPath("$.customer.name").value("John Doe"))
+                .andExpect(jsonPath("$.products[0].description").value("Test Product"));
     }
 
     // Test 404
@@ -112,6 +116,11 @@ class OrderControllerTests extends BaseControllerTest {
         customerDTO.setId(1L);
         customerDTO.setName("John Doe");
         orderDTO.setCustomer(customerDTO);
+
+        OrderProductDTO productDTO = new OrderProductDTO();
+        productDTO.setId(2L);
+        productDTO.setDescription("Test Product");
+        orderDTO.setProducts(List.of(productDTO));
 
         return orderDTO;
     }
