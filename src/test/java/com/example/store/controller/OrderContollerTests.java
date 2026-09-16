@@ -63,8 +63,8 @@ class OrderControllerTests {
         when(orderRepository.save(order)).thenReturn(order);
 
         mockMvc.perform(post("/order")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(order)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(order)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"))
                 .andExpect(jsonPath("$.customer.name").value("John Doe"));
@@ -78,5 +78,25 @@ class OrderControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..description").value("Test Order"))
                 .andExpect(jsonPath("$..customer.name").value("John Doe"));
+    }
+
+    // Add a test for for single order
+    @Test
+    void testGetOrderById() throws Exception {
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        mockMvc.perform(get("/order/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description").value("Test Order"))
+                .andExpect(jsonPath("$.customer.name").value("John Doe"));
+    }
+
+    // Test 404
+    @Test
+    void testGetOrderByIdNotFound() throws Exception {
+        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/order/1"))
+                .andExpect(status().isNotFound());
     }
 }
