@@ -1,10 +1,15 @@
 package com.example.store.service;
 
+import com.example.store.dto.CreateOrderRequest;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.OrderProductDTO;
+import com.example.store.entity.Customer;
 import com.example.store.entity.Order;
+import com.example.store.entity.Product;
 import com.example.store.mapper.OrderMapper;
+import com.example.store.repository.CustomerRepository;
 import com.example.store.repository.OrderRepository;
+import com.example.store.repository.ProductRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +28,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +38,12 @@ class OrderServiceTests {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private CustomerRepository customerRepository;
+
+    @Mock
+    private ProductRepository productRepository;
 
     @Mock
     private OrderMapper orderMapper;
@@ -87,17 +100,24 @@ class OrderServiceTests {
 
     @Test
     void createOrderSavesAndMapsOrder() {
-        Order order = order("Test Order");
         OrderDTO orderDTO = orderDTO("Test Order");
 
-        when(orderRepository.save(order)).thenReturn(order);
-        when(orderMapper.toDto(order)).thenReturn(orderDTO);
+        CreateOrderRequest request = createOrderRequest();
+        Customer customer = new Customer();
+        Product product = new Product();
+        product.setId(2L);
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(productRepository.findAllById(List.of(2L))).thenReturn(List.of(product));
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderMapper.toDto(any(Order.class))).thenReturn(orderDTO);
 
-        OrderDTO result = orderService.createOrder(order);
+        OrderDTO result = orderService.createOrder(request);
 
         assertEquals(orderDTO, result);
-        verify(orderRepository).save(order);
-        verify(orderMapper).toDto(order);
+        verify(orderRepository)
+                .save(argThat(savedOrder -> savedOrder.getProducts().size() == 1
+                        && savedOrder.getProducts().get(0).getProduct() == product));
+        verify(orderMapper).toDto(any(Order.class));
     }
 
     private Order order(String description) {
@@ -114,5 +134,13 @@ class OrderServiceTests {
         productDTO.setDescription("Test Product");
         orderDTO.setProducts(List.of(productDTO));
         return orderDTO;
+    }
+
+    private CreateOrderRequest createOrderRequest() {
+        CreateOrderRequest request = new CreateOrderRequest();
+        request.setDescription("Test Order");
+        request.setCustomerId(1L);
+        request.setProductIds(List.of(2L));
+        return request;
     }
 }

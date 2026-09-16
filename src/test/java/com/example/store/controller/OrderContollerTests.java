@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateOrderRequest;
 import com.example.store.dto.OrderCustomerDTO;
 import com.example.store.dto.OrderDTO;
 import com.example.store.dto.OrderProductDTO;
@@ -62,11 +63,11 @@ class OrderControllerTests extends BaseControllerTest {
     @Test
     void testCreateOrder() throws Exception {
         OrderDTO orderDTO = orderDTO();
-        when(orderService.createOrder(order)).thenReturn(orderDTO);
+        when(orderService.createOrder(any(CreateOrderRequest.class))).thenReturn(orderDTO);
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(order)))
+                        .content(objectMapper.writeValueAsString(createOrderRequest())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"))
                 .andExpect(jsonPath("$.customer.name").value("John Doe"))
@@ -121,5 +122,13 @@ class OrderControllerTests extends BaseControllerTest {
         orderDTO.setProducts(List.of(productDTO));
 
         return orderDTO;
+    }
+
+    private CreateOrderRequest createOrderRequest() {
+        CreateOrderRequest request = new CreateOrderRequest();
+        request.setDescription("Test Order");
+        request.setCustomerId(1L);
+        request.setProductIds(List.of(2L));
+        return request;
     }
 }
