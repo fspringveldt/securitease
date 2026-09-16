@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Validated
 public class OrderService {
-    final String cacheName = "orders";
-
+    private final String cacheName = "orders";
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 

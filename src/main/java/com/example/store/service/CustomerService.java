@@ -19,9 +19,7 @@ import lombok.RequiredArgsConstructor;
 @Validated
 @RequiredArgsConstructor
 public class CustomerService {
-
-    final String cacheName = "customers";
-
+    private final String cacheName = "customers";
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 

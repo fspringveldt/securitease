@@ -1,0 +1,87 @@
+package com.example.store.controller;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.example.store.dto.ProductDTO;
+import com.example.store.entity.Product;
+import com.example.store.mapper.ProductMapper;
+import com.example.store.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@WebMvcTest(ProductController.class)
+@ComponentScan(basePackageClasses = ProductMapper.class)
+class ProductControllerTests extends BaseControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private ProductService productService;
+
+    private Product product;
+
+    @BeforeEach
+    void setUp() {
+        product = new Product();
+        product.setId(1L);
+        product.setDescription("Test Product");
+    }
+
+    @Test
+    void testGetAllProducts() throws Exception {
+        when(productService.getAllProducts(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(productDTO())));
+
+        mockMvc.perform(get("/product"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].description").value("Test Product"));
+    }
+
+    @Test
+    void testGetProductById() throws Exception {
+        when(productService.getProductById(1L)).thenReturn(productDTO());
+
+        mockMvc.perform(get("/product/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description").value("Test Product"));
+    }
+
+    @Test
+    void testCreateProduct() throws Exception {
+        when(productService.createProduct(any(Product.class))).thenReturn(productDTO());
+
+        mockMvc.perform(post("/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(product)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.description").value("Test Product"));
+    }
+
+    private ProductDTO productDTO() {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(1L);
+        productDTO.setDescription("Test Product");
+        return productDTO;
+    }
+}

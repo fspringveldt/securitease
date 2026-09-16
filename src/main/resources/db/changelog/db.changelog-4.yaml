@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4-reset-generated-id-sequences
+      author: developer@securitease.com
+      changes:
+        - sql:
+            sql: |
+              SELECT setval(
+                pg_get_serial_sequence('customer', 'id'),
+                COALESCE((SELECT MAX(id) FROM customer), 1),
+                true
+              );
+              SELECT setval(
+                pg_get_serial_sequence('"order"', 'id'),
+                COALESCE((SELECT MAX(id) FROM "order"), 1),
+                true
+              );
+              SELECT setval(
+                pg_get_serial_sequence('product', 'id'),
+                COALESCE((SELECT MAX(id) FROM product), 1),
+                true
+              );
