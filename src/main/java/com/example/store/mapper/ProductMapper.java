@@ -12,9 +12,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
     @Mapping(target = "orderIds", source = "orders")
-    ProductDTO productToProductDTO(Product product);
+    ProductDTO toDto(Product product);
 
-    List<ProductDTO> productsToProductDTOs(List<Product> products);
+    List<ProductDTO> toEntityList(List<Product> products);
 
     default Long orderProductToOrderId(OrderProduct orderProduct) {
         return orderProduct.getOrder().getId();

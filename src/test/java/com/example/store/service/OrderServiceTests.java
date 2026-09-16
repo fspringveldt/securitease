@@ -46,7 +46,7 @@ class OrderServiceTests {
         Page<Order> orders = new PageImpl<>(List.of(order), pageable, 41);
 
         when(orderRepository.findAll(pageable)).thenReturn(orders);
-        when(orderMapper.orderToOrderDTO(order)).thenReturn(orderDTO);
+        when(orderMapper.toDto(order)).thenReturn(orderDTO);
 
         Page<OrderDTO> result = orderService.getAllOrders(pageable);
 
@@ -55,7 +55,7 @@ class OrderServiceTests {
         assertEquals(20, result.getSize());
         assertEquals(41, result.getTotalElements());
         verify(orderRepository).findAll(pageable);
-        verify(orderMapper).orderToOrderDTO(order);
+        verify(orderMapper).toDto(order);
     }
 
     @Test
@@ -65,13 +65,13 @@ class OrderServiceTests {
         order.setId(1L);
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(orderMapper.orderToOrderDTO(order)).thenReturn(orderDTO);
+        when(orderMapper.toDto(order)).thenReturn(orderDTO);
 
         OrderDTO result = orderService.getOrderById(1L);
 
         assertEquals(orderDTO, result);
         verify(orderRepository).findById(1L);
-        verify(orderMapper).orderToOrderDTO(order);
+        verify(orderMapper).toDto(order);
     }
 
     @Test
@@ -91,13 +91,13 @@ class OrderServiceTests {
         OrderDTO orderDTO = orderDTO("Test Order");
 
         when(orderRepository.save(order)).thenReturn(order);
-        when(orderMapper.orderToOrderDTO(order)).thenReturn(orderDTO);
+        when(orderMapper.toDto(order)).thenReturn(orderDTO);
 
         OrderDTO result = orderService.createOrder(order);
 
         assertEquals(orderDTO, result);
         verify(orderRepository).save(order);
-        verify(orderMapper).orderToOrderDTO(order);
+        verify(orderMapper).toDto(order);
     }
 
     private Order order(String description) {

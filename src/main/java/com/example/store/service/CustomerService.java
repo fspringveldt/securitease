@@ -25,18 +25,16 @@ public class CustomerService {
 
     @Cacheable(value = cacheName, key = "'all-' + #pageable")
     public Page<CustomerDTO> getAllCustomers(@NonNull Pageable pageable) {
-        return customerRepository.findAll(pageable).map(customerMapper::customerToCustomerDTO);
+        return customerRepository.findAll(pageable).map(customerMapper::toDto);
     }
 
     @Cacheable(value = cacheName, key = "#namePart + '-' + #pageable")
     public Page<CustomerDTO> getCustomersByNamePart(@NonNull String namePart, @NonNull Pageable pageable) {
-        return customerRepository
-                .findCustomersByNamePart(namePart, pageable)
-                .map(customerMapper::customerToCustomerDTO);
+        return customerRepository.findCustomersByNamePart(namePart, pageable).map(customerMapper::toDto);
     }
 
     @CacheEvict(value = cacheName, allEntries = true)
     public CustomerDTO createCustomer(@NonNull Customer customer) {
-        return customerMapper.customerToCustomerDTO(customerRepository.save(customer));
+        return customerMapper.toDto(customerRepository.save(customer));
     }
 }

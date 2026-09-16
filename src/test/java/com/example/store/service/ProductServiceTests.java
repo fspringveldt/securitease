@@ -45,7 +45,7 @@ class ProductServiceTests {
         Page<Product> products = new PageImpl<>(List.of(product), pageable, 41);
 
         when(productRepository.findAll(pageable)).thenReturn(products);
-        when(productMapper.productToProductDTO(product)).thenReturn(productDTO);
+        when(productMapper.toDto(product)).thenReturn(productDTO);
 
         Page<ProductDTO> result = productService.getAllProducts(pageable);
 
@@ -54,7 +54,7 @@ class ProductServiceTests {
         assertEquals(20, result.getSize());
         assertEquals(41, result.getTotalElements());
         verify(productRepository).findAll(pageable);
-        verify(productMapper).productToProductDTO(product);
+        verify(productMapper).toDto(product);
     }
 
     @Test
@@ -64,13 +64,13 @@ class ProductServiceTests {
         product.setId(1L);
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(productMapper.productToProductDTO(product)).thenReturn(productDTO);
+        when(productMapper.toDto(product)).thenReturn(productDTO);
 
         ProductDTO result = productService.getProductById(1L);
 
         assertEquals(productDTO, result);
         verify(productRepository).findById(1L);
-        verify(productMapper).productToProductDTO(product);
+        verify(productMapper).toDto(product);
     }
 
     @Test
@@ -90,13 +90,13 @@ class ProductServiceTests {
         ProductDTO productDTO = productDTO("Test Product");
 
         when(productRepository.save(product)).thenReturn(product);
-        when(productMapper.productToProductDTO(product)).thenReturn(productDTO);
+        when(productMapper.toDto(product)).thenReturn(productDTO);
 
         ProductDTO result = productService.createProduct(product);
 
         assertEquals(productDTO, result);
         verify(productRepository).save(product);
-        verify(productMapper).productToProductDTO(product);
+        verify(productMapper).toDto(product);
     }
 
     private Product product(String description) {

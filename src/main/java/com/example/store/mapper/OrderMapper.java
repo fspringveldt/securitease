@@ -15,13 +15,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
     @Mapping(target = "products", source = "products")
-    OrderDTO orderToOrderDTO(Order order);
+    OrderDTO toDto(Order order);
 
-    List<OrderDTO> ordersToOrderDTOs(List<Order> orders);
+    List<OrderDTO> toDtoList(List<Order> orders);
 
     OrderCustomerDTO orderToOrderCustomerDTO(Customer customer);
 
     @Mapping(target = "id", source = "product.id")
     @Mapping(target = "description", source = "product.description")
-    OrderProductDTO orderProductToOrderProductDTO(OrderProduct orderProduct);
+    OrderProductDTO toOrderProductDto(OrderProduct orderProduct);
 }

@@ -29,17 +29,17 @@ public class ProductService {
     @Cacheable(value = cacheName, key = "'all-' + #pageable")
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(@NonNull Pageable pageable) {
-        return productRepository.findAll(pageable).map(productMapper::productToProductDTO);
+        return productRepository.findAll(pageable).map(productMapper::toDto);
     }
 
     @Cacheable(value = cacheName, key = "#id")
     public ProductDTO getProductById(@NonNull Long id) {
-        return productMapper.productToProductDTO(
+        return productMapper.toDto(
                 productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     @CacheEvict(value = cacheName, allEntries = true)
     public ProductDTO createProduct(@NonNull Product product) {
-        return productMapper.productToProductDTO(productRepository.save(product));
+        return productMapper.toDto(productRepository.save(product));
     }
 }

@@ -41,7 +41,7 @@ class CustomerServiceTests {
         Page<Customer> customers = new PageImpl<>(List.of(customer), pageable, 41);
 
         when(customerRepository.findAll(pageable)).thenReturn(customers);
-        when(customerMapper.customerToCustomerDTO(customer)).thenReturn(customerDTO);
+        when(customerMapper.toDto(customer)).thenReturn(customerDTO);
 
         Page<CustomerDTO> result = customerService.getAllCustomers(pageable);
 
@@ -50,7 +50,7 @@ class CustomerServiceTests {
         assertEquals(20, result.getSize());
         assertEquals(41, result.getTotalElements());
         verify(customerRepository).findAll(pageable);
-        verify(customerMapper).customerToCustomerDTO(customer);
+        verify(customerMapper).toDto(customer);
     }
 
     @Test
@@ -61,14 +61,14 @@ class CustomerServiceTests {
         Page<Customer> customers = new PageImpl<>(List.of(customer), pageable, 1);
 
         when(customerRepository.findCustomersByNamePart("Stiedeman", pageable)).thenReturn(customers);
-        when(customerMapper.customerToCustomerDTO(customer)).thenReturn(customerDTO);
+        when(customerMapper.toDto(customer)).thenReturn(customerDTO);
 
         Page<CustomerDTO> result = customerService.getCustomersByNamePart("Stiedeman", pageable);
 
         assertEquals(List.of(customerDTO), result.getContent());
         assertEquals(1, result.getTotalElements());
         verify(customerRepository).findCustomersByNamePart("Stiedeman", pageable);
-        verify(customerMapper).customerToCustomerDTO(customer);
+        verify(customerMapper).toDto(customer);
     }
 
     @Test
@@ -77,13 +77,13 @@ class CustomerServiceTests {
         CustomerDTO customerDTO = customerDTO("John Doe");
 
         when(customerRepository.save(customer)).thenReturn(customer);
-        when(customerMapper.customerToCustomerDTO(customer)).thenReturn(customerDTO);
+        when(customerMapper.toDto(customer)).thenReturn(customerDTO);
 
         CustomerDTO result = customerService.createCustomer(customer);
 
         assertEquals(customerDTO, result);
         verify(customerRepository).save(customer);
-        verify(customerMapper).customerToCustomerDTO(customer);
+        verify(customerMapper).toDto(customer);
     }
 
     private Customer customer(String name) {

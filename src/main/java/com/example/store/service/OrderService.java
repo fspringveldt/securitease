@@ -29,19 +29,19 @@ public class OrderService {
     @Cacheable(value = cacheName, key = "'all-' + #pageable")
     @Transactional(readOnly = true)
     public Page<OrderDTO> getAllOrders(@NonNull Pageable pageable) {
-        return orderRepository.findAll(pageable).map(orderMapper::orderToOrderDTO);
+        return orderRepository.findAll(pageable).map(orderMapper::toDto);
     }
 
     @Cacheable(value = cacheName, key = "#id")
     public OrderDTO getOrderById(@NonNull Long id) {
         // Ideally this should be handled by a service layer.
         // Left it like this for simplicity.
-        return orderMapper.orderToOrderDTO(
+        return orderMapper.toDto(
                 orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
     @CacheEvict(value = cacheName, allEntries = true)
     public OrderDTO createOrder(@NonNull Order order) {
-        return orderMapper.orderToOrderDTO(orderRepository.save(order));
+        return orderMapper.toDto(orderRepository.save(order));
     }
 }
