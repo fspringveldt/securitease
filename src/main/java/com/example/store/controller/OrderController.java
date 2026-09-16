@@ -1,47 +1,46 @@
 package com.example.store.controller;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.store.dto.OrderDTO;
 import com.example.store.entity.Order;
-import com.example.store.mapper.OrderMapper;
-import com.example.store.repository.OrderRepository;
+import com.example.store.service.OrderService;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.net.http.HttpResponse;
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
+    private final OrderService orderService;
 
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
-        return orderMapper.ordersToOrderDTOs(orderRepository.findAll());
+    public Page<OrderDTO> getAllOrders(@NonNull @PageableDefault(size = 20) Pageable pageable) {
+        return orderService.getAllOrders(pageable);
     }
 
     @GetMapping("/{id}")
     public OrderDTO getOrderById(@PathVariable @NonNull Long id) {
-        // Ideally this should be handled by a service layer.
-        // Left it like this for simplicity.
-        return orderMapper.orderToOrderDTO(
-                orderRepository.findById(id)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+        return orderService.getOrderById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDTO createOrder(@RequestBody Order order) {
-        return orderMapper.orderToOrderDTO(orderRepository.save(order));
+        return orderService.createOrder(order);
     }
 }
