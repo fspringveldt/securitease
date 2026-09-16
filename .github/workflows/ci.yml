@@ -50,6 +50,27 @@ jobs:
           SPRING_DATASOURCE_USERNAME: ci
           SPRING_DATASOURCE_PASSWORD: ci
 
+      - name: Verify database-backed application startup
+        run: |
+          ./gradlew bootRun > bootRun.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error "http://localhost:8080/products?page=0&size=1" > /dev/null \
+              && curl --fail --silent --show-error "http://localhost:8080/order?page=0&size=1" > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          cat bootRun.log
+          exit 1
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5433/store
+          SPRING_DATASOURCE_USERNAME: ci
+          SPRING_DATASOURCE_PASSWORD: ci
+
   image:
     name: Build and publish image
     needs: test

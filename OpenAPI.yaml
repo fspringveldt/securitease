@@ -160,7 +160,7 @@ paths:
                   format: int64
                 name:
                   type: string
-  /product:
+  /products:
     get:
       summary: Get Products
       tags:
@@ -217,7 +217,7 @@ paths:
                   format: int64
                 description:
                   type: string
-  /product/{id}:
+  /products/{id}:
     get:
       summary: Get Product
       tags:

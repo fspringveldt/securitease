@@ -30,6 +30,10 @@ public class CustomerService {
 
     @Cacheable(value = cacheName, key = "#namePart + '-' + #pageable")
     public Page<CustomerDTO> getCustomersByNamePart(@NonNull String namePart, @NonNull Pageable pageable) {
+        if (namePart.isBlank() || namePart.chars().anyMatch(Character::isWhitespace)) {
+            return Page.empty(pageable);
+        }
+
         return customerRepository.findCustomersByNamePart(namePart, pageable).map(customerMapper::toDto);
     }
 

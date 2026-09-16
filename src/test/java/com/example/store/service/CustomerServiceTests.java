@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +70,16 @@ class CustomerServiceTests {
         assertEquals(1, result.getTotalElements());
         verify(customerRepository).findCustomersByNamePart("Stiedeman", pageable);
         verify(customerMapper).toDto(customer);
+    }
+
+    @Test
+    void getCustomersByNamePartRejectsQueriesContainingWhitespace() {
+        Pageable pageable = PageRequest.of(0, 20);
+
+        Page<CustomerDTO> result = customerService.getCustomersByNamePart("John Doe", pageable);
+
+        assertEquals(0, result.getTotalElements());
+        verifyNoInteractions(customerRepository, customerMapper);
     }
 
     @Test

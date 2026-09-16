@@ -52,7 +52,7 @@ class ProductControllerTests extends BaseControllerTest {
     void testGetAllProducts() throws Exception {
         when(productService.getAllProducts(any(Pageable.class))).thenReturn(new PageImpl<>(List.of(productDTO())));
 
-        mockMvc.perform(get("/product"))
+        mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].description").value("Test Product"))
                 .andExpect(jsonPath("$.content[0].orderIds[0]").value(1));
@@ -62,7 +62,7 @@ class ProductControllerTests extends BaseControllerTest {
     void testGetProductById() throws Exception {
         when(productService.getProductById(1L)).thenReturn(productDTO());
 
-        mockMvc.perform(get("/product/1"))
+        mockMvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description").value("Test Product"))
                 .andExpect(jsonPath("$.orderIds[0]").value(1));
@@ -72,7 +72,7 @@ class ProductControllerTests extends BaseControllerTest {
     void testCreateProduct() throws Exception {
         when(productService.createProduct(any(Product.class))).thenReturn(productDTO());
 
-        mockMvc.perform(post("/product")
+        mockMvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(product)))
                 .andExpect(status().isCreated())
