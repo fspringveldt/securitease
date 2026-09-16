@@ -8,6 +8,7 @@ import com.example.store.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public class CustomerController {
     @GetMapping
     public List<CustomerDTO> getAllCustomers() {
         return customerMapper.customersToCustomerDTOs(customerRepository.findAll());
+    }
+
+    @GetMapping(params = "name")
+    public List<CustomerDTO> getCustomersByNamePart(@RequestParam("name") @NonNull String namePart) {
+        return customerMapper.customersToCustomerDTOs(customerRepository.findCustomersByNamePart(namePart));
     }
 
     @PostMapping

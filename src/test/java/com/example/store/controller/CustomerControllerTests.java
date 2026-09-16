@@ -47,8 +47,8 @@ class CustomerControllerTests {
         when(customerRepository.save(customer)).thenReturn(customer);
 
         mockMvc.perform(post("/customer")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customer)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("John Doe"));
     }
@@ -61,5 +61,14 @@ class CustomerControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..name").value("John Doe"));
         ;
+    }
+
+    @Test
+    void testGetCustomersByNamePart() throws Exception {
+        when(customerRepository.findCustomersByNamePart("John")).thenReturn(List.of(customer));
+
+        mockMvc.perform(get("/customer").param("name", "John"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..name").value("John Doe"));
     }
 }
