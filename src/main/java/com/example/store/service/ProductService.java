@@ -1,7 +1,7 @@
 package com.example.store.service;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Product;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 
@@ -39,7 +39,7 @@ public class ProductService {
     }
 
     @CacheEvict(value = cacheName, allEntries = true)
-    public ProductDTO createProduct(@NonNull Product product) {
-        return productMapper.toDto(productRepository.save(product));
+    public ProductDTO createProduct(@NonNull CreateProductRequest request) {
+        return productMapper.toDto(productRepository.save(productMapper.toEntity(request)));
     }
 }

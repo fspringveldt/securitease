@@ -1,7 +1,7 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
-import com.example.store.entity.Customer;
 import com.example.store.service.CustomerService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerDTO createCustomer(@RequestBody @NonNull Customer customer) {
-        return customerService.createCustomer(customer);
+    public CustomerDTO createCustomer(@RequestBody @NonNull CreateCustomerRequest request) {
+        return customerService.createCustomer(request);
     }
 }

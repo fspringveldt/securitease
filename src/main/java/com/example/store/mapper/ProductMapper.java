@@ -1,11 +1,13 @@
 package com.example.store.mapper;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.OrderProduct;
 import com.example.store.entity.Product;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -15,6 +17,8 @@ public interface ProductMapper {
     ProductDTO toDto(Product product);
 
     List<ProductDTO> toEntityList(List<Product> products);
+
+    @NonNull Product toEntity(@NonNull CreateProductRequest request);
 
     default Long orderProductToOrderId(OrderProduct orderProduct) {
         return orderProduct.getOrder().getId();

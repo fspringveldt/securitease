@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 import com.example.store.mapper.ProductMapper;
@@ -86,13 +87,16 @@ class ProductServiceTests {
 
     @Test
     void createProductSavesAndMapsProduct() {
+        CreateProductRequest request = new CreateProductRequest();
+        request.setDescription("Test Product");
         Product product = product("Test Product");
         ProductDTO productDTO = productDTO("Test Product");
 
+        when(productMapper.toEntity(request)).thenReturn(product);
         when(productRepository.save(product)).thenReturn(product);
         when(productMapper.toDto(product)).thenReturn(productDTO);
 
-        ProductDTO result = productService.createProduct(product);
+        ProductDTO result = productService.createProduct(request);
 
         assertEquals(productDTO, result);
         verify(productRepository).save(product);

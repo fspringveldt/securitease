@@ -23,6 +23,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,17 +51,21 @@ public class OrderService {
     }
 
     @CacheEvict(value = cacheName, allEntries = true)
+    @Transactional
     public OrderDTO createOrder(@NonNull CreateOrderRequest request) {
-        Order order = new Order();
-        order.setDescription(request.getDescription());
-        order.setCustomer(customerRepository
-                .findById(request.getCustomerId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found")));
+        if (!customerRepository.existsById(request.getCustomerId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
 
         List<Product> products = productRepository.findAllById(request.getProductIds());
-        if (products.size() != request.getProductIds().size()) {
+        Set<Long> foundProductIds = products.stream().map(Product::getId).collect(Collectors.toSet());
+        if (!foundProductIds.containsAll(request.getProductIds())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more products not found");
         }
+
+        Order order = new Order();
+        order.setDescription(request.getDescription());
+        order.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
         products.forEach(order::addProduct);
 
         return orderMapper.toDto(orderRepository.save(order));

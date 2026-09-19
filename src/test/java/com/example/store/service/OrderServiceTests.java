@@ -106,7 +106,8 @@ class OrderServiceTests {
         Customer customer = new Customer();
         Product product = new Product();
         product.setId(2L);
-        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+        when(customerRepository.existsById(1L)).thenReturn(true);
+        when(customerRepository.getReferenceById(1L)).thenReturn(customer);
         when(productRepository.findAllById(List.of(2L))).thenReturn(List.of(product));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderMapper.toDto(any(Order.class))).thenReturn(orderDTO);

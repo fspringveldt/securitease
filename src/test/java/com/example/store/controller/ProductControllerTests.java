@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 import com.example.store.mapper.ProductMapper;
@@ -70,11 +71,14 @@ class ProductControllerTests extends BaseControllerTest {
 
     @Test
     void testCreateProduct() throws Exception {
-        when(productService.createProduct(any(Product.class))).thenReturn(productDTO());
+        CreateProductRequest request = new CreateProductRequest();
+        request.setDescription("Test Product");
+
+        when(productService.createProduct(any(CreateProductRequest.class))).thenReturn(productDTO());
 
         mockMvc.perform(post("/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Product"));
     }

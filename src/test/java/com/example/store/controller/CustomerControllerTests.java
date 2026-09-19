@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
@@ -49,14 +50,17 @@ class CustomerControllerTests extends BaseControllerTest {
 
     @Test
     void testCreateCustomer() throws Exception {
+        CreateCustomerRequest request = new CreateCustomerRequest();
+        request.setName("John Doe");
+
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setId(1L);
         customerDTO.setName("John Doe");
-        when(customerService.createCustomer(customer)).thenReturn(customerDTO);
+        when(customerService.createCustomer(request)).thenReturn(customerDTO);
 
         mockMvc.perform(post("/customer")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customer)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("John Doe"));
     }

@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
@@ -84,13 +85,16 @@ class CustomerServiceTests {
 
     @Test
     void createCustomerSavesAndMapsCustomer() {
+        CreateCustomerRequest request = new CreateCustomerRequest();
+        request.setName("John Doe");
         Customer customer = customer("John Doe");
         CustomerDTO customerDTO = customerDTO("John Doe");
 
+        when(customerMapper.toEntity(request)).thenReturn(customer);
         when(customerRepository.save(customer)).thenReturn(customer);
         when(customerMapper.toDto(customer)).thenReturn(customerDTO);
 
-        CustomerDTO result = customerService.createCustomer(customer);
+        CustomerDTO result = customerService.createCustomer(request);
 
         assertEquals(customerDTO, result);
         verify(customerRepository).save(customer);

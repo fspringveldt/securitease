@@ -1,7 +1,7 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Product;
 import com.example.store.service.ProductService;
 
 import lombok.NonNull;
@@ -38,7 +38,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDTO createProduct(@NonNull @RequestBody Product product) {
-        return productService.createProduct(product);
+    public ProductDTO createProduct(@NonNull @RequestBody CreateProductRequest request) {
+        return productService.createProduct(request);
     }
 }
