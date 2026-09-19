@@ -23,12 +23,12 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    @Cacheable(value = cacheName, key = "'all-' + #pageable")
+    @Cacheable(sync = true, value = cacheName, key = "'all-' + #pageable")
     public Page<CustomerDTO> getAllCustomers(@NonNull Pageable pageable) {
         return customerRepository.findAll(pageable).map(customerMapper::toDto);
     }
 
-    @Cacheable(value = cacheName, key = "#namePart + '-' + #pageable")
+    @Cacheable(sync = true, value = cacheName, key = "#namePart + '-' + #pageable")
     public Page<CustomerDTO> getCustomersByNamePart(@NonNull String namePart, @NonNull Pageable pageable) {
         if (namePart.isBlank() || namePart.chars().anyMatch(Character::isWhitespace)) {
             return Page.empty(pageable);

@@ -26,13 +26,13 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    @Cacheable(value = cacheName, key = "'all-' + #pageable")
+    @Cacheable(sync = true, value = cacheName, key = "'all-' + #pageable")
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(@NonNull Pageable pageable) {
         return productRepository.findAll(pageable).map(productMapper::toDto);
     }
 
-    @Cacheable(value = cacheName, key = "#id")
+    @Cacheable(sync = true, value = cacheName, key = "#id")
     public ProductDTO getProductById(@NonNull Long id) {
         return productMapper.toDto(
                 productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));

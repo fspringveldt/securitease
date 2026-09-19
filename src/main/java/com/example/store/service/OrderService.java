@@ -34,13 +34,13 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
 
-    @Cacheable(value = cacheName, key = "'all-' + #pageable")
+    @Cacheable(sync = true, value = cacheName, key = "'all-' + #pageable")
     @Transactional(readOnly = true)
     public Page<OrderDTO> getAllOrders(@NonNull Pageable pageable) {
         return orderRepository.findAll(pageable).map(orderMapper::toDto);
     }
 
-    @Cacheable(value = cacheName, key = "#id")
+    @Cacheable(sync = true, value = cacheName, key = "#id")
     public OrderDTO getOrderById(@NonNull Long id) {
         // Ideally this should be handled by a service layer.
         // Left it like this for simplicity.
