@@ -109,6 +109,7 @@ class OrderServiceTests {
         when(customerRepository.existsById(1L)).thenReturn(true);
         when(customerRepository.getReferenceById(1L)).thenReturn(customer);
         when(productRepository.findAllById(List.of(2L))).thenReturn(List.of(product));
+        when(orderMapper.toEntity(request)).thenReturn(order(request.getDescription()));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderMapper.toDto(any(Order.class))).thenReturn(orderDTO);
 

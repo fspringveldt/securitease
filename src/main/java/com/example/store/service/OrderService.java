@@ -44,8 +44,6 @@ public class OrderService {
 
     @Cacheable(sync = true, value = cacheName, key = "#id")
     public OrderDTO getOrderById(@NonNull Long id) {
-        // Ideally this should be handled by a service layer.
-        // Left it like this for simplicity.
         return orderMapper.toDto(
                 orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
@@ -63,8 +61,7 @@ public class OrderService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more products not found");
         }
 
-        Order order = new Order();
-        order.setDescription(request.getDescription());
+        Order order = orderMapper.toEntity(request);
         order.setCustomer(customerRepository.getReferenceById(request.getCustomerId()));
         products.forEach(order::addProduct);
 
