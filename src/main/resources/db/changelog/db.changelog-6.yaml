@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6-reset-order-products-id-sequence
+      author: developer@securitease.com
+      changes:
+        - sql:
+            sql: |
+              SELECT setval(
+                pg_get_serial_sequence('order_products', 'id'),
+                COALESCE((SELECT MAX(id) FROM order_products), 1),
+                (SELECT COUNT(*) > 0 FROM order_products)
+              );

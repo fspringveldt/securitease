@@ -18,6 +18,5 @@ public interface CustomerMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "orders", ignore = true)
-    @NonNull
-    Customer toEntity(@NonNull CreateCustomerRequest request);
+    @NonNull Customer toEntity(@NonNull CreateCustomerRequest request);
 }
