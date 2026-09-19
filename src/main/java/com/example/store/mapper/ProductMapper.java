@@ -18,7 +18,10 @@ public interface ProductMapper {
 
     List<ProductDTO> toEntityList(List<Product> products);
 
-    @NonNull Product toEntity(@NonNull CreateProductRequest request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orders", ignore = true)
+    @NonNull
+    Product toEntity(@NonNull CreateProductRequest request);
 
     default Long orderProductToOrderId(OrderProduct orderProduct) {
         return orderProduct.getOrder().getId();

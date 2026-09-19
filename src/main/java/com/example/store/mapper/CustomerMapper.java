@@ -5,6 +5,7 @@ import com.example.store.dto.CustomerDTO;
 import com.example.store.entity.Customer;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -15,5 +16,8 @@ public interface CustomerMapper {
 
     List<CustomerDTO> toDtoList(List<Customer> customer);
 
-    @NonNull Customer toEntity(@NonNull CreateCustomerRequest request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orders", ignore = true)
+    @NonNull
+    Customer toEntity(@NonNull CreateCustomerRequest request);
 }
