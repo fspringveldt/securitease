@@ -14,14 +14,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -89,5 +93,39 @@ class CustomerControllerTests extends BaseControllerTest {
         mockMvc.perform(get("/customer").param("name", "John"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..name").value("John Doe"));
+    }
+
+    @Test
+    void testDeleteCustomerReturnsNoContentWhenSuccessful() throws Exception {
+        doNothing().when(customerService).deleteCustomer(1L);
+        mockMvc.perform(delete("/customer/{id}", 1L)).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testDeleteCustomerReturnsNotFoundWhenCustomerDoesNotExist() throws Exception {
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .when(customerService)
+                .deleteCustomer(1L);
+        mockMvc.perform(delete("/customer/{id}", 1L)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetOneCustomer() throws Exception {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setId(1L);
+        customerDTO.setName("John Doe");
+        when(customerService.getOneCustomer(1L)).thenReturn(customerDTO);
+
+        mockMvc.perform(get("/customer/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    void testGetOneCustomerReturnsNotFoundWhenCustomerDoesNotExist() throws Exception {
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .when(customerService)
+                .getOneCustomer(1L);
+        mockMvc.perform(get("/customer/{id}", 1L)).andExpect(status().isNotFound());
     }
 }

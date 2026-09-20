@@ -3,7 +3,6 @@ package com.example.store.service;
 import com.example.store.config.KafkaTopic;
 import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
-import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.repository.CustomerRepository;
 
@@ -15,12 +14,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Validated
@@ -36,6 +37,12 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Page<CustomerDTO> getAllCustomers(@NonNull Pageable pageable) {
         return customerRepository.findAll(pageable).map(customerMapper::toDto);
+    }
+
+    public CustomerDTO getOneCustomer(@NonNull Long id) {
+        return customerMapper.toDto(customerRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found")));
     }
 
     @Cacheable(sync = true, value = cacheName, key = "#namePart + '-' + #pageable")
@@ -67,5 +74,12 @@ public class CustomerService {
             var created = createCustomer(customer);
             logger.info("Customer created {}", created);
         }
+    }
+
+    public void deleteCustomer(@NonNull Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
+        customerRepository.deleteById(id);
     }
 }

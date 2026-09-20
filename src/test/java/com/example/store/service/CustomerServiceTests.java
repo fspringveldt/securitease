@@ -15,10 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -98,6 +101,36 @@ class CustomerServiceTests {
 
         assertEquals(customerDTO, result);
         verify(customerRepository).save(customer);
+        verify(customerMapper).toDto(customer);
+    }
+
+    @Test
+    void deleteCustomerThrowsExceptionWhenCustomerDoesNotExist() {
+        Long customerId = 1L;
+        assertThrows(ResponseStatusException.class, () -> customerService.deleteCustomer(customerId));
+    }
+
+    @Test
+    void deleteCustomerWorksCorrectly() {
+        Long customerId = 1L;
+        when(customerRepository.existsById(customerId)).thenReturn(true);
+        customerService.deleteCustomer(customerId);
+        verify(customerRepository).deleteById(customerId);
+    }
+
+    @Test
+    void getOneCustomerWorksCorrectly() {
+        Long customerId = 1L;
+        Customer customer = customer("John Doe");
+        CustomerDTO customerDTO = customerDTO("John Doe");
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
+        when(customerMapper.toDto(customer)).thenReturn(customerDTO);
+
+        CustomerDTO result = customerService.getOneCustomer(customerId);
+
+        assertEquals(customerDTO, result);
+        verify(customerRepository).findById(customerId);
         verify(customerMapper).toDto(customer);
     }
 

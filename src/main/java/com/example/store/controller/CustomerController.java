@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +30,6 @@ public class CustomerController {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
     private final CustomerService customerService;
-
-    @PostMapping("path")
-    public String postMethodName(@RequestBody String entity) {
-        // TODO: process POST request
-
-        return entity;
-    }
 
     @GetMapping("/test-thread")
     public String handleRequest() throws InterruptedException {
@@ -52,6 +47,11 @@ public class CustomerController {
         return customerService.getAllCustomers(pageable);
     }
 
+    @GetMapping("/{id}")
+    public CustomerDTO getOneCustomer(@NonNull @PathVariable Long id) {
+        return customerService.getOneCustomer(id);
+    }
+
     @GetMapping(params = "name")
     public Page<CustomerDTO> getCustomersByNamePart(
             @RequestParam("name") @NonNull String namePart, @PageableDefault(size = 20) @NonNull Pageable pageable) {
@@ -64,9 +64,15 @@ public class CustomerController {
         return customerService.createCustomer(request);
     }
 
-    @PostMapping("/send-create-customer-event")
+    @PostMapping("/create-customer-event")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void sendCreateCustomer(@RequestBody @NonNull Customer customer) {
-        customerService.sendCreateCustomerEvent(customer);
+    public void sendCreateCustomer(@RequestBody @NonNull CreateCustomerRequest request) {
+        customerService.sendCreateCustomerEvent(request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCustomer(@NonNull @PathVariable Long id) {
+        customerService.deleteCustomer(id);
     }
 }
