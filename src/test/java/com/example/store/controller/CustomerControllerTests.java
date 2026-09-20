@@ -2,6 +2,7 @@ package com.example.store.controller;
 
 import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.UpdateCustomerRequest;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.service.CustomerService;
@@ -127,5 +128,35 @@ class CustomerControllerTests extends BaseControllerTest {
                 .when(customerService)
                 .getOneCustomer(1L);
         mockMvc.perform(get("/customer/{id}", 1L)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testUpdateCustomerWorksCorrectly() throws Exception {
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+        request.setName("John Doe");
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setId(1L);
+        customerDTO.setName("John Doe");
+        when(customerService.updateCustomer(eq(1L), any(UpdateCustomerRequest.class)))
+                .thenReturn(customerDTO);
+
+        mockMvc.perform(put("/customer/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    void testUpdateCustomerReturnsNotFoundWhenCustomerDoesNotExist() throws Exception {
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+        request.setName("John Doe");
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .when(customerService)
+                .updateCustomer(eq(1L), any(UpdateCustomerRequest.class));
+        mockMvc.perform(put("/customer/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
     }
 }

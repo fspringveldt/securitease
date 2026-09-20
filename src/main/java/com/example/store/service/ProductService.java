@@ -22,23 +22,23 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @Validated
 public class ProductService {
-    private final String cacheName = "products";
+    private final String pagesCacheName = "products";
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
-    @Cacheable(sync = true, value = cacheName, key = "'all-' + #pageable")
+    @Cacheable(sync = true, value = pagesCacheName, key = "'all-' + #pageable")
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(@NonNull Pageable pageable) {
         return productRepository.findAll(pageable).map(productMapper::toDto);
     }
 
-    @Cacheable(sync = true, value = cacheName, key = "#id")
+    @Cacheable(sync = true, value = pagesCacheName, key = "#id")
     public ProductDTO getProductById(@NonNull Long id) {
         return productMapper.toDto(
                 productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
-    @CacheEvict(value = cacheName, allEntries = true)
+    @CacheEvict(value = pagesCacheName, allEntries = true)
     public ProductDTO createProduct(@NonNull CreateProductRequest request) {
         return productMapper.toDto(productRepository.save(productMapper.toEntity(request)));
     }

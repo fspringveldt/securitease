@@ -2,6 +2,7 @@ package com.example.store.controller;
 
 import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.UpdateCustomerRequest;
 import com.example.store.service.CustomerService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +52,12 @@ public class CustomerController {
     @GetMapping("/{id}")
     public CustomerDTO getOneCustomer(@NonNull @PathVariable Long id) {
         return customerService.getOneCustomer(id);
+    }
+
+    @PutMapping("/{id}")
+    public CustomerDTO updateCustomer(
+            @NonNull @PathVariable Long id, @NonNull @RequestBody UpdateCustomerRequest request) {
+        return customerService.updateCustomer(id, request);
     }
 
     @GetMapping(params = "name")

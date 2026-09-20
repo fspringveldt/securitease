@@ -2,6 +2,7 @@ package com.example.store.service;
 
 import com.example.store.dto.CreateCustomerRequest;
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.UpdateCustomerRequest;
 import com.example.store.entity.Customer;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.repository.CustomerRepository;
@@ -132,6 +133,34 @@ class CustomerServiceTests {
         assertEquals(customerDTO, result);
         verify(customerRepository).findById(customerId);
         verify(customerMapper).toDto(customer);
+    }
+
+    @Test
+    void updateCustomerWorksCorrectly() {
+        Long customerId = 1L;
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+        request.setName("John Doe");
+        Customer customer = customer("John Doe");
+        CustomerDTO customerDTO = customerDTO("John Doe");
+
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
+        when(customerRepository.save(customer)).thenReturn(customer);
+        when(customerMapper.toDto(customer)).thenReturn(customerDTO);
+
+        CustomerDTO result = customerService.updateCustomer(customerId, request);
+
+        assertEquals(customerDTO, result);
+        verify(customerRepository).findById(customerId);
+        verify(customerRepository).save(customer);
+        verify(customerMapper).toDto(customer);
+    }
+
+    @Test
+    void updateCustomerThrowsExceptionWhenCustomerDoesNotExist() {
+        Long customerId = 1L;
+        UpdateCustomerRequest request = new UpdateCustomerRequest();
+        request.setName("John Doe");
+        assertThrows(ResponseStatusException.class, () -> customerService.updateCustomer(customerId, request));
     }
 
     private Customer customer(String name) {
