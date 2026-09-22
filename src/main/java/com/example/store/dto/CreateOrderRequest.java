@@ -1,8 +1,10 @@
 package com.example.store.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.util.List;
 
@@ -11,7 +13,8 @@ import java.util.List;
 public class CreateOrderRequest {
     private String description;
 
-    @NonNull private Long customerId;
+    @NotNull private Long customerId;
 
-    @NonNull private List<Long> productIds;
+    @NotEmpty
+    private List<@NotNull Long> productIds;
 }

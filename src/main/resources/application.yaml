@@ -11,5 +11,10 @@ spring:
         format_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 10
+  cache:
+    type: caffeine
+    cache-names: orders,customers,products
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=10m
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

@@ -1,11 +1,13 @@
 package com.example.store.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
 public class CreateCustomerRequest {
-    @NonNull private String name;
+    @NotBlank
+    private String name;
 }

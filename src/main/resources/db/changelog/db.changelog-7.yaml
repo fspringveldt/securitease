@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7-add-relationship-indexes
+      author: developer@securitease.com
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS pg_trgm
+        - sql:
+            sql: CREATE INDEX idx_customer_name_trgm ON customer USING gin (lower(name) gin_trgm_ops)
+        - createIndex:
+            tableName: order
+            columnNames: customer_id
+            indexName: idx_order_customer_id
+        - createIndex:
+            tableName: order_products
+            columnNames: order_id
+            indexName: idx_order_products_order_id
+        - createIndex:
+            tableName: order_products
+            columnNames: product_id
+            indexName: idx_order_products_product_id

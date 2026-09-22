@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,12 @@ public class OrderService {
                 orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 
-    @CacheEvict(value = cacheName, allEntries = true)
+    @Caching(
+            evict = {
+                @CacheEvict(value = "orders", allEntries = true),
+                @CacheEvict(value = "customers", allEntries = true),
+                @CacheEvict(value = "products", allEntries = true)
+            })
     @Transactional
     public OrderDTO createOrder(@NonNull CreateOrderRequest request) {
         if (!customerRepository.existsById(request.getCustomerId())) {

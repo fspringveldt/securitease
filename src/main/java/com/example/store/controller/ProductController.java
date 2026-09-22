@@ -4,6 +4,8 @@ import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.service.ProductService;
 
+import jakarta.validation.Valid;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +40,7 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDTO createProduct(@NonNull @RequestBody CreateProductRequest request) {
+    public ProductDTO createProduct(@NonNull @Valid @RequestBody CreateProductRequest request) {
         return productService.createProduct(request);
     }
 }
